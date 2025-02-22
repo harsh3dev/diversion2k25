@@ -1,149 +1,161 @@
 module 0x1::FreelanceEscrow {
-    use std::signer;
-    use std::vector;
-    use std::table;
 
-    struct Milestone has key, store {
+    // Enums for Milestone and Project status
+    enum MilestoneStatus {
+        NotStarted, InProgress, Completed, Disputed, Resolved
+    }
+
+    enum ProjectStatus {
+        Active, Completed, Cancelled
+    }
+
+    // Structure for Milestone
+    struct Milestone has key {
         description: vector<u8>,
         amount: u64,
-        status: u8,
+        status: MilestoneStatus,
         paid: bool
     }
 
-    struct Project has key, store {
+    // Structure for Project
+    struct Project has key {
         client: address,
         freelancer: address,
         total_amount: u64,
         claimed_amount: u64,
         completed_milestones: u64,
-        status: u8,
+        status: ProjectStatus,
         milestones: vector<Milestone>,
         is_disputed: bool,
         dispute_votes_for_client: u64,
         dispute_votes_for_freelancer: u64
     }
 
-    struct Escrow has key, store {
-        projects: table::Table<u64, Project>,
-        project_count: u64
+    // Resource for storing projects
+    struct ProjectStore has key {
+        projects: table<u64, Project>,
+        project_count: u64,
     }
 
-    // Initialize storage
-    public entry fun init(account: &signer) {
-        let escrow = Escrow {
-            projects: table::new<u64, Project>(),
-            project_count: 0
-        };
-        move_to(account, escrow);
-    }
-
-    // Create a new project
-    public entry fun create_project(
-        account: &signer,
+    // Function to initialize a new project
+    public fun create_project(
+        project_store: &mut ProjectStore,
+        client: address,
         freelancer: address,
-        descriptions: vector<vector<u8>>,
-        amounts: vector<u64>,
-        total_amount: u64
-    ) acquires Escrow {
-        let escrow = borrow_global_mut<Escrow>(signer::address_of(account));
-
-        assert!(vector::length(&descriptions) == vector::length(&amounts), 100);
-        assert!(vector::length(&descriptions) > 0, 101);
-
-        let milestones = vector::empty<Milestone>();
-        let len = vector::length(&descriptions);
-        let i = 0;
-        while (i < len) {
-            vector::push_back(
-                &mut milestones,
-                Milestone {
-                    description: *vector::borrow(&descriptions, i),
-                    amount: *vector::borrow(&amounts, i),
-                    status: 0,
-                    paid: false
-                }
-            );
-            i = i + 1;
+        milestone_descriptions: vector<vector<u8>>,
+        milestone_amounts: vector<u64>
+    ) {
+        let total_amount = 0u64;
+        let new_project = Project {
+            client: client,
+            freelancer: freelancer,
+            total_amount: 0,
+            claimed_amount: 0,
+            completed_milestones: 0,
+            status: ProjectStatus::Active,
+            milestones: vector::empty<Milestone>(),
+            is_disputed: false,
+            dispute_votes_for_client: 0,
+            dispute_votes_for_freelancer: 0,
         };
 
-        table::add(
-            &mut escrow.projects,
-            escrow.project_count,
-            Project {
-                client: signer::address_of(account),
-                freelancer: freelancer,
-                total_amount: total_amount,
-                claimed_amount: 0,
-                completed_milestones: 0,
-                status: 0,
-                milestones: milestones,
-                is_disputed: false,
-                dispute_votes_for_client: 0,
-                dispute_votes_for_freelancer: 0
-            }
-        );
-        escrow.project_count = escrow.project_count + 1;
+        let length = vector::length<milestone_descriptions>();
+        for i in 0..length {
+            let milestone = Milestone {
+                description: vector::pop_back(milestone_descriptions),
+                amount: vector::pop_back(milestone_amounts),
+                status: MilestoneStatus::NotStarted,
+                paid: false,
+            };
+            vector::push_back(&mut new_project.milestones, milestone);
+        }
+
+        project_store.project_count = project_store.project_count + 1;
+        table::add(&mut project_store.projects, project_store.project_count, new_project);
     }
 
-    // Mark milestone as completed
-    public entry fun complete_milestone(account: &signer, project_id: u64, milestone_index: u64) acquires Escrow {
-        let escrow = borrow_global_mut<Escrow>(signer::address_of(account));
-        let project_ref = table::borrow_mut(&mut escrow.projects, project_id);
-        assert!(signer::address_of(account) == project_ref.freelancer, 102);
-        assert!(project_ref.status == 0, 103);
-        assert!(milestone_index < vector::length(&project_ref.milestones), 104);
+    // Function to start a milestone
+    public fun start_milestone(
+        project_store: &mut ProjectStore,
+        project_id: u64,
+        milestone_index: u64
+    ) {
+        let project = table::borrow_mut(&mut project_store.projects, project_id);
+        assert!(project.status == ProjectStatus::Active, 101); // Error if project is not active
+        let milestone = &mut project.milestones[milestone_index];
+        assert!(milestone.status == MilestoneStatus::NotStarted, 102); // Error if milestone is not in NotStarted status
+        milestone.status = MilestoneStatus::InProgress;
+    }
 
-        let milestone = vector::borrow_mut(&mut project_ref.milestones, milestone_index);
-        assert!(milestone.status == 1, 105);
-        milestone.status = 2;
-        project_ref.completed_milestones = project_ref.completed_milestones + 1;
+    // Function to complete a milestone
+    public fun complete_milestone(
+        project_store: &mut ProjectStore,
+        project_id: u64,
+        milestone_index: u64
+    ) {
+        let project = table::borrow_mut(&mut project_store.projects, project_id);
+        assert!(project.status == ProjectStatus::Active, 101);
+        let milestone = &mut project.milestones[milestone_index];
+        assert!(milestone.status == MilestoneStatus::InProgress, 103);
+        milestone.status = MilestoneStatus::Completed;
+        project.completed_milestones = project.completed_milestones + 1;
 
-        if (project_ref.completed_milestones == vector::length(&project_ref.milestones)) {
-            project_ref.status = 1;
+        // Check if all milestones are completed, if so, mark the project as Completed
+        if project.completed_milestones == vector::length(&project.milestones) {
+            project.status = ProjectStatus::Completed;
         }
     }
 
-    // Claim payment (handled externally on Aptos)
-    public entry fun claim_payment(account: &signer, project_id: u64) acquires Escrow {
-        let escrow = borrow_global_mut<Escrow>(signer::address_of(account));
-        let project_ref = table::borrow_mut(&mut escrow.projects, project_id);
-        assert!(signer::address_of(account) == project_ref.freelancer, 106);
-        assert!(project_ref.completed_milestones > 0, 107);
+    // Claim payment based on completed milestones
+    public fun claim_payment(
+        project_store: &mut ProjectStore,
+        project_id: u64
+    ) {
+        let project = table::borrow_mut(&mut project_store.projects, project_id);
+        assert!(project.completed_milestones > 0, 104);
+        assert!(project.claimed_amount < project.total_amount, 105);
 
-        let claimable_amount = (project_ref.total_amount * project_ref.completed_milestones) / vector::length(&project_ref.milestones);
-        let amount_to_claim = claimable_amount - project_ref.claimed_amount;
-        assert!(amount_to_claim > 0, 108);
+        let claimable_amount = project.total_amount * project.completed_milestones / vector::length(&project.milestones);
+        let amount_to_claim = claimable_amount - project.claimed_amount;
+        assert!(amount_to_claim > 0, 106);
 
-        project_ref.claimed_amount = claimable_amount;
+        project.claimed_amount = project.claimed_amount + amount_to_claim;
+        // Payment logic (transferring amount to freelancer) would go here
     }
 
-    // Raise a dispute
-    public entry fun raise_dispute(account: &signer, project_id: u64, milestone_index: u64) acquires Escrow {
-        let escrow = borrow_global_mut<Escrow>(signer::address_of(account));
-        let project_ref = table::borrow_mut(&mut escrow.projects, project_id);
-        assert!(signer::address_of(account) == project_ref.client, 109);
-        assert!(milestone_index < vector::length(&project_ref.milestones), 110);
-
-        let milestone = vector::borrow_mut(&mut project_ref.milestones, milestone_index);
-        assert!(milestone.status == 2, 111);
-        milestone.status = 3;
-        project_ref.is_disputed = true;
+    // Dispute management
+    public fun raise_dispute(
+        project_store: &mut ProjectStore,
+        project_id: u64,
+        milestone_index: u64
+    ) {
+        let project = table::borrow_mut(&mut project_store.projects, project_id);
+        let milestone = &mut project.milestones[milestone_index];
+        assert!(milestone.status == MilestoneStatus::Completed, 107);
+        milestone.status = MilestoneStatus::Disputed;
+        project.is_disputed = true;
     }
 
-    // Vote on a dispute
-    public entry fun vote_on_dispute(account: &signer, project_id: u64, vote_for_client: bool) acquires Escrow {
-        let escrow = borrow_global_mut<Escrow>(signer::address_of(account));
-        let project_ref = table::borrow_mut(&mut escrow.projects, project_id);
-        assert!(project_ref.is_disputed, 112);
+    // Voting on disputes
+    public fun vote_on_dispute(
+        project_store: &mut ProjectStore,
+        project_id: u64,
+        vote_for_client: bool
+    ) {
+        let project = table::borrow_mut(&mut project_store.projects, project_id);
+        assert!(project.is_disputed, 108);
 
-        if (vote_for_client) {
-            project_ref.dispute_votes_for_client = project_ref.dispute_votes_for_client + 1;
+        if vote_for_client {
+            project.dispute_votes_for_client = project.dispute_votes_for_client + 1;
         } else {
-            project_ref.dispute_votes_for_freelancer = project_ref.dispute_votes_for_freelancer + 1;
-        };
+            project.dispute_votes_for_freelancer = project.dispute_votes_for_freelancer + 1;
+        }
 
-        if (project_ref.dispute_votes_for_client + project_ref.dispute_votes_for_freelancer >= 5) {
-            project_ref.is_disputed = false;
+        // Resolve the dispute if enough votes are cast
+        if project.dispute_votes_for_client + project.dispute_votes_for_freelancer >= 5 {
+            project.is_disputed = false;
+            let resolved_for_client = project.dispute_votes_for_client > project.dispute_votes_for_freelancer;
+            // Resolve milestone and update its status based on the votes
         }
     }
 }
