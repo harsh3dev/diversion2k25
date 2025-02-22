@@ -1,31 +1,22 @@
 import { NextResponse } from "next/server";
 import mongoose, { Schema, model, models } from "mongoose";
-
+import connectDB from "@/lib/mongodb"
 const MONGODB_URI = process.env.MONGODB_URI || "";
 let isConnected = false;
 
-async function connectDB() {
-  if (isConnected) return;
-  try {
-    await mongoose.connect(MONGODB_URI);
-    isConnected = true;
-  } catch (err) {
-    console.error("MongoDB connection error:", err);
-  }
-}
 
 const ClientSchema = new Schema({
   name: { type: String, required: true },
-  company: { type: String },
+  company: { type: String, required: true },
   projectsPosted: { type: Number, default: 0 },
   completedProjects: { type: Number, default: 0 },
   trustScore: { type: Number, default: 0 },
-  location: { type: String },
-  industry: { type: String },
+  location: { type: String, required: true },
+  industry: { type: String, required: true },
   website: { type: String },
-  about: { type: String },
+  about: { type: String, required: true },
   linkedinUrl: { type: String },
-  walletaddress: { type: String },
+  walletAddress: { type: String, required: true, default: "" },
 });
 
 const Client = models.Client || model("Client", ClientSchema);
@@ -44,6 +35,7 @@ export async function POST(request: Request) {
   try {
     await connectDB();
     const data = await request.json();
+    console.log(data, data)
     const newClient = new Client(data);
     await newClient.save();
     return NextResponse.json({ success: true, data: newClient });
