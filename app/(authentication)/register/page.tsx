@@ -28,7 +28,7 @@ export default function AuthForm() {
         alert("Login failed");
       }
     } else {
-      const res = await fetch("/api/user/signup", {
+      const res = await fetch("/api/user", {
         method: "POST",
         body: JSON.stringify({ username, email, password }),
         headers: { "Content-Type": "application/json" },

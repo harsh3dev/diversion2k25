@@ -1,24 +1,20 @@
+// app/api/jobs/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Job from '@/model/Job';
-import { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   await connectDB();
 
-  const { id } = req.query;
+  const { id } = params;
 
-  if (req.method === 'GET') {
-    try {
-      const job = await Job.findById(id).populate('milestones');
-      if (!job) {
-        return res.status(404).json({ message: 'Job not found' });
-      }
-      res.status(200).json(job);
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+  try {
+    const job = await Job.findById(id).populate('milestones');
+    if (!job) {
+      return NextResponse.json({ message: 'Job not found' }, { status: 404 });
     }
-  } else {
-    res.setHeader('Allow', ['GET']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+    return NextResponse.json(job, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: 'Server error', error }, { status: 500 });
   }
-} 
+}

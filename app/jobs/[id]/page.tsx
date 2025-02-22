@@ -35,7 +35,7 @@ export default function JobPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const getData = async () => {
       const { id } = params;
-      const response = await fetch(`/api/job/${id}`);
+      const response = await fetch(`/api/jobs/${id}`);
       if (!response.ok) {
         console.log("error occured")
       }

@@ -20,6 +20,12 @@ const ConnectPetraWallet: React.FC = () => {
   // AptosClient for blockchain interaction (optional, depends on your use case)
   const client = new AptosClient(PETRA_WALLET_URL);
 
+  useEffect(() => {
+    if(walletAddress){
+      localStorage.setItem('walletAddress', walletAddress);
+    }
+  }, [walletAddress]);
+
   // Function to connect the wallet
   const connectWallet = async () => {
     try {
