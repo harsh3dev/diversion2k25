@@ -8,6 +8,7 @@ export default function AuthForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isProgrammer, setIsProgrammer] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,12 +31,12 @@ export default function AuthForm() {
     } else {
       const res = await fetch("/api/user", {
         method: "POST",
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, isProgrammer }),
         headers: { "Content-Type": "application/json" },
       });
 
       if (res.ok) {
-        setIsLogin(true);
+        router.push("/onboarding");
       } else {
         alert("Signup failed");
       }
@@ -58,16 +59,27 @@ export default function AuthForm() {
             />
           </div>
           {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                placeholder="Enter your email"
-              />
-            </div>
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 mt-1 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Are you a freelancer?</label>
+                <input
+                  type="checkbox"
+                  checked={isProgrammer}
+                  onChange={(e) => setIsProgrammer(e.target.checked)}
+                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                />
+              </div>
+            </>
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700">Password</label>
