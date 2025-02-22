@@ -4,24 +4,19 @@ import useEthWallet from '@/hooks/useEthWallet';
 import ConnectButton from '@/lib/wallet-modal';
 import { FeatherIcon as EthereumIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 
 export default function Home() {
   const { loading, open, address, isConnected, user } = useEthWallet();
 
+  useEffect(() => {
+    console.table({ loading, open, address, isConnected, user }, ['loading', 'open', 'address', 'isConnected', 'user']);
+  }, [loading, open, address, isConnected, user])
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <ConnectButton />
-      {/* <InfoList /> */}
-      <div>
-        <h1>Wallet Info</h1>
-        <p>Address: {address}</p>
-        <p>Connected: {isConnected.toString()}</p>
-        <p>User: {user?.email}</p>
-        <p>Loading: {loading}</p>
-        <p>Open: {open}</p>
-      </div>
-      {/* <ActionButtonList /> */}
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
