@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Globe, Linkedin, MapPin, Briefcase } from "lucide-react";
 import ConnectPetraWallet from "@/components/tetra";
 import { useState, useEffect } from "react";
+
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -48,6 +49,7 @@ export default function ClientProfile() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const router = useRouter();
+
 
   useEffect(() => {
     const storedWalletAddress = localStorage.getItem("walletAddress");
@@ -247,7 +249,7 @@ export default function ClientProfile() {
                   disabled={!isWalletConnected}
                   className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                 >
-                  Create Client Profile
+                  {form.formState.isSubmitting ? "Creating Profile..." : "Create Profile"}
                 </Button>
               </form>
             </Form>

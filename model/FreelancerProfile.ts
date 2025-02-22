@@ -10,7 +10,6 @@ const FreelancerProfileSchema = new mongoose.Schema({
   },
   trustTokens: {
     type: Number,
-    required: true,
   },
   about: {
     type: String,
