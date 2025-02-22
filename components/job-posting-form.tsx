@@ -59,17 +59,23 @@ export default function JobPostingForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Add the job to mock data with a new ID
-      const newJob = {
-        ...values,
-        _id: (mockJobs.length + 1).toString(),
-        createdAt: new Date().toISOString(),
-      };
-      mockJobs.unshift(newJob);
-
+      const user = JSON.parse(localStorage.getItem("user") || "{}"); // Parse the user object from localStorage
+      if (!user.id) {
+        throw new Error("User not found in localStorage");
+      }
+      const response = await fetch('/api/job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...values, userId: user.id }), // Include userId in the request body
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to create job');
+      }
+  
+      const newJob = await response.json();
       form.reset();
       setMilestoneCount(1);
       console.log('Job posted:', newJob);
@@ -80,7 +86,7 @@ export default function JobPostingForm() {
       setIsSubmitting(false);
     }
   };
-
+  
   const updateMilestoneCount = (newCount: number) => {
     const count = Math.max(1, newCount);
     const currentMilestones = form.getValues('milestones');
