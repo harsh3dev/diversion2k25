@@ -2,6 +2,8 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+import WagmiProviderComp from "@/lib/wagmi/wagmi-provider";
+import { headers } from "next/headers";
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -15,6 +17,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const cookies = headers().get('cookie')  
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -27,7 +30,9 @@ export default function RootLayout({
           enableSystem={false}
           storageKey="web3-theme"
         >
-          {children}
+          <WagmiProviderComp cookies={cookies}>
+            {children}
+          </WagmiProviderComp>
         </ThemeProvider>
       </body>
     </html>

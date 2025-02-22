@@ -26,7 +26,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation';
 import { mockJobs } from '@/lib/mockData';
 
 const formSchema = z.object({
@@ -43,7 +42,7 @@ const formSchema = z.object({
 export default function JobPostingForm() {
   const [milestoneCount, setMilestoneCount] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+ 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,14 +78,14 @@ export default function JobPostingForm() {
       form.reset();
       setMilestoneCount(1);
       console.log('Job posted:', newJob);
-      router.push('/jobs');
+      // router.push('/jobs');
     } catch (error: any) {
       console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   const updateMilestoneCount = (newCount: number) => {
     const count = Math.max(1, newCount);
     const currentMilestones = form.getValues('milestones');
