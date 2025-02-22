@@ -19,7 +19,7 @@ export default function FreelancerProfilePage() {
   useEffect(() => {
     const fetchFreelancer = async () => {
       try {
-        const response = await fetch(`/api/freelancers/${id}`);
+        const response = await fetch(`/api/freelancers/${id}/alljob`);
         if (!response.ok) {
           throw new Error('Failed to fetch freelancer');
         }

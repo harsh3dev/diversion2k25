@@ -44,6 +44,11 @@ const JobSchema = new mongoose.Schema({
     enum: ['Not Started', 'In Progress', 'Completed', 'Past Work', 'Disputed Work'],
     default: 'Not Started',
   },
+  freelancerJobId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'FreelancerProfile',  
+    default: null,
+  },
 });
 
 export default mongoose.models.Job || mongoose.model('Job', JobSchema);
