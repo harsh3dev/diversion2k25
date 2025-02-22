@@ -12,6 +12,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import { AcceptingorRejecting } from "@/components/accept";
 
 const statusColors = {
   not_started: "bg-slate-600",
@@ -90,8 +91,22 @@ export default function JobDetailsPage() {
         console.log("Error occurred while fetching job applications");
         return;
       }
-      const applicationsData: Application[] = await response.json();
-      setApplications(applicationsData);
+      const applicationsData: any[] = await response.json();
+      const formattedApplications = applicationsData.map((app) => ({
+        id: app._id,
+        freelancer: {
+          id: app.freelancer._id,
+          name: app.freelancer.username,
+          imageUrl: '', // Add imageUrl if available
+          location: '', // Add location if available
+          trustTokens: 0, // Add trustTokens if available
+        },
+        appliedAt: app.appliedAt,
+        coverLetter: '', // Add coverLetter if available
+        proposedAmount: 0, // Add proposedAmount if available
+        estimatedDuration: '', // Add estimatedDuration if available
+      }));
+      setApplications(formattedApplications);
     };
 
     fetchJobDetails();
@@ -175,40 +190,8 @@ export default function JobDetailsPage() {
                   >
                     <Card className="p-6 hover:bg-card/60 transition-colors">
                       <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={application.freelancer.imageUrl} />
-                          <AvatarFallback>{application.freelancer.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="font-medium">{application.freelancer.name}</h3>
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <MapPin className="w-3 h-3" />
-                                <span>{application.freelancer.location}</span>
-                                <span>•</span>
-                                <Star className="w-3 h-3 text-yellow-500" />
-                                <span>{application.freelancer.trustTokens} Trust Tokens</span>
-                              </div>
-                            </div>
-                            <span className="text-sm text-muted-foreground">
-                              Applied {formatDistanceToNow(new Date(application.appliedAt))} ago
-                            </span>
-                          </div>
-                          <p className="text-sm text-muted-foreground line-clamp-2">
-                            {application.coverLetter}
-                          </p>
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="flex items-center gap-1">
-                              <DollarSign className="w-4 h-4 text-green-500" />
-                              <span>{formatAmount(application.proposedAmount)} proposed</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-4 h-4 text-blue-500" />
-                              <span>{application.estimatedDuration} estimated</span>
-                            </div>
-                          </div>
-                        </div>
+                        <div className="text-white">{application.freelancer.name}</div>
+                        <AcceptingorRejecting job={job} userId={application.freelancer.id} />
                       </div>
                     </Card>
                   </Link>

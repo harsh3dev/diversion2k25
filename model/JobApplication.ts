@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
+import './user'; // Import the User schema
 
 const JobApplicationSchema = new mongoose.Schema({
   freelancer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'FreelancerProfile',
+    ref: 'User',
     required: true,
   },
   appliedAt: {
@@ -15,7 +16,6 @@ const JobApplicationSchema = new mongoose.Schema({
     ref: 'Job',
     required: true,
   },
-  
 });
 
-export default mongoose.models.JobApplication || mongoose.model('JobApplication', JobApplicationSchema); 
+export default mongoose.models.JobApplication || mongoose.model('JobApplication', JobApplicationSchema);

@@ -1,6 +1,7 @@
 import connectDB from '@/lib/mongodb';
 import Job from '@/model/Job';
 import JobApplication from '@/model/JobApplication';
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
     });
 
     await application.save();
-
+    
     return NextResponse.json({ message: 'Application submitted successfully' }, { status: 201 });
   } catch (error) {
     console.error('Server error', error);
@@ -46,10 +47,12 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 
   try {
-    const applications = await JobApplication.find({ jobId: id }).populate('freelancer');
+    console.log(`Fetching applications for job ID: ${id}`);
+    const applications = await JobApplication.find({ job: id }).populate('freelancer');
+    console.log('Applications found:', applications);
     return NextResponse.json(applications, { status: 200 });
   } catch (error) {
+    console.error('Server error', error);
     return NextResponse.json({ message: 'Server error', error }, { status: 500 });
   }
 }
-
