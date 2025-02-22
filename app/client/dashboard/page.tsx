@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Briefcase, Users, Calendar, Target } from "lucide-react";
 import { formatDate, formatAmount } from "@/lib/utils/format";
 import Link from "next/link";
-import { mockJobs } from "@/lib/mockData";
+import { useEffect, useState } from "react";
 
 const statusColors = {
   not_started: "bg-slate-500",
@@ -16,16 +16,41 @@ const statusColors = {
   past: "bg-purple-500",
 };
 
+interface Job {
+  _id: string;
+  title: string;
+  category: string;
+  status: string;
+  createdAt: string;
+  applicantsCount: number;
+  milestones: { length: number }[];
+  totalAmount: number;
+}
+
 export default function DashboardPage() {
   const searchParams = useSearchParams();
+  const [jobs, setJobs] = useState<Job[]>([]);
   const currentStatus = searchParams.get("status") || "ongoing";
 
+  const fetchJobs = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const id = user.id;
+    if (!id) return;
+    const res = await fetch(`/api/client/jobs/${id}`);
+    const data = await res.json();
+    setJobs(data);
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
+
   // Filter jobs based on status
-  const filteredJobs = mockJobs.filter((job) => {
+  const filteredJobs = jobs.filter((job) => {
     if (currentStatus === "past") {
       return job.status === "completed" && new Date(job.createdAt) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     }
-    return job.status === currentStatus;
+    return job;
   });
 
   return (

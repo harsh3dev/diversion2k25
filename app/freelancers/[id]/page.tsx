@@ -7,13 +7,31 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, MapPin, Star, Clock, DollarSign, Globe, Github, Linkedin } from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockFreelancers } from "@/lib/mockData";
+import { FreelancerProfile, mockFreelancers } from "@/lib/mockData";
 import { formatAmount } from "@/lib/utils/format";
+import { useEffect, useState } from "react";
 
 export default function FreelancerProfilePage() {
   const { id } = useParams();
-  const freelancer = mockFreelancers.find((f) => f.id === id);
 
+  const [freelancer, setFreelancer] = useState<FreelancerProfile | null>(null);
+
+  useEffect(() => {
+    const fetchFreelancer = async () => {
+      try {
+        const response = await fetch(`/api/freelancers/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch freelancer');
+        }
+        const data = await response.json();
+        setFreelancer(data);
+      } catch (error) {
+        console.error('Error fetching freelancer:', error);
+      }
+    };
+
+    fetchFreelancer();
+  }, [id]);
   if (!freelancer) {
     return <div>Freelancer not found</div>;
   }

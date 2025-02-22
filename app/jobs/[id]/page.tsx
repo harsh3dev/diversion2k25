@@ -1,4 +1,5 @@
 "use client";
+"use client";
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
@@ -10,34 +11,34 @@ import { mockJobs } from '@/lib/mockData';
 import JobDescription from './job-description';
 import { useEffect, useState } from 'react';
 
+interface Milestone {
+  description: string;
+  amount: number;
+}
 
+interface Job {
+  _id: string;
+  title: string;
+  category: string;
+  createdAt: Date;
+  estimatedHours: number;
+  description: string;
+  milestones: Milestone[];
+  status: string;
+}
 
-
-  interface Milestone {
-    description: string;
-    amount: number;
-  }
-
-  interface Job {
-    _id: string;
-    title: string;
-    category: string;
-    createdAt: Date;
-    estimatedHours: number;
-    description: string;
-    milestones: Milestone[];
-  }
 export default function JobPage({ params }: { params: { id: string } }) {
-
   const [job, setJob] = useState<Job | null>(null);
   const [totalAmount, setTotalAmount] = useState<number>(0);
+  const [userId, setUserId] = useState<string>(''); 
 
   useEffect(() => {
     const getData = async () => {
       const { id } = params;
-      const response = await fetch(`/api/job/${id}`);
+      console.log("id ",id)
+      const response = await fetch(`/api/jobs/${id}`);
       if (!response.ok) {
-        console.log("error occured")
+        console.log("error occurred");
       }
       const job: Job = await response.json();
       setJob(job);
@@ -47,6 +48,36 @@ export default function JobPage({ params }: { params: { id: string } }) {
 
     getData();
   }, [params]);
+
+  const handleApply = async () => {
+    const user = JSON.parse(localStorage.getItem('user') || ""); // Parse the user from localStorage
+    if (!user) {
+      console.log("User not found");
+      return;
+    }
+    try {
+      const response = await fetch(`/api/jobs/${params.id}/apply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ // Ensure body is a JSON string
+          id: user.id,
+          jobId: params.id
+        }),
+      });
+  
+      if (response.ok) {
+        alert('Application submitted successfully');
+      } else {
+        alert('Failed to submit application');
+      }
+    } catch (error) {
+      console.error("Error submitting application", error);
+      alert('Error occurred while submitting the application');
+    }
+  };
+  
 
   if (!job) {
     return <div>Loading...</div>;
@@ -120,7 +151,7 @@ export default function JobPage({ params }: { params: { id: string } }) {
           </Card>
 
           <div className="flex justify-center">
-            <Button size="lg" className="glow-effect">
+            <Button size="lg" className="glow-effect" onClick={handleApply}>
               Apply for this Job
             </Button>
           </div>
