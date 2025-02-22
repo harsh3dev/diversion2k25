@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     req.on('end', async () => {
-      const buffer = Buffer.concat(chunks);
+      const buffer = Buffer.concat(chunks.map(chunk => new Uint8Array(chunk)));
       const fileType = req.headers['content-type'];
       const fileName = req.headers['x-file-name'] as string;
 
