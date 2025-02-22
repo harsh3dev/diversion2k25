@@ -1,4 +1,8 @@
+"use client"
+import { ActionButtonList } from '@/components/ActionButtonList';
+import { InfoList } from '@/components/InfoList';
 import JobPostingForm from '@/components/job-posting-form';
+import useWallet from '@/hooks/useWallet';
 import { USDTAbi, USDTAddress } from '@/lib/credentials';
 import ConnectButton from '@/lib/wallet-modal';
 import { FeatherIcon as EthereumIcon } from 'lucide-react';
@@ -13,9 +17,21 @@ export default function Home() {
   //   functionName: 'totalSupply'
   // })
 
+  const { loading, open, address, isConnected, user } = useWallet();
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <ConnectButton />
+      {/* <InfoList /> */}
+      <div>
+        <h1>Wallet Info</h1>
+        <p>Address: {address}</p>
+        <p>Connected: {isConnected.toString()}</p>
+        <p>User: {user?.email}</p>
+        <p>Loading: {loading}</p>
+        <p>Open: {open}</p>
+      </div>
+      {/* <ActionButtonList /> */}
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
