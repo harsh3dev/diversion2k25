@@ -1,0 +1,45 @@
+import mongoose from 'mongoose';
+
+const FreelancerProfileSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+  },
+  trustTokens: {
+    type: Number,
+    required: true,
+  },
+  about: {
+    type: String,
+  },
+  skills: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Skill',
+  }],
+  completedJobs: {
+    type: Number,
+  },
+  successRate: {
+    type: Number,
+  },
+  location: {
+    type: String,
+  },
+  hourlyRate: {
+    type: Number,
+  },
+  languages: [{
+    type: String,
+  }],
+  githubUrl: {
+    type: String,
+  },
+  linkedinUrl: {
+    type: String,
+  },
+});
+
+export default mongoose.models.FreelancerProfile || mongoose.model('FreelancerProfile', FreelancerProfileSchema); 

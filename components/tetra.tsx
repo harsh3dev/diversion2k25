@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AptosClient } from 'aptos';
+import { LogOut } from 'lucide-react';
 
 // Define the PetraWallet interface
 interface PetraWallet {
@@ -79,14 +80,14 @@ const ConnectPetraWallet: React.FC = () => {
     <div className="wallet-connection">
       {isConnected ? (
         <div>
-          <p>Connected Wallet: {walletAddress}</p>
-          <button onClick={disconnectWallet} className="btn-disconnect">
-            Disconnect
+          {/* <p>Connected Wallet: {walletAddress}</p> */}
+          <button onClick={disconnectWallet} className="btn-disconnect bg-[#e74f57c1] p-3 rounded-full font-bold">
+          <LogOut size={16} />
           </button>
         </div>
       ) : (
         <div>
-          <button onClick={connectWallet} className="btn-connect">
+          <button onClick={connectWallet} className="btn-connect bg-[#4F68E7] px-4 py-2 rounded-full font-bold">
             Connect Petra Wallet
           </button>
           {error && <p style={{ color: 'red' }}>{error}</p>}

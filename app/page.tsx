@@ -17,7 +17,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-      <ConnectButton />
+      {/* <ConnectButton /> */}
+      <div className="w-full p-2 flex justify-end items-center"><ConnectPetraWallet/></div>
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
@@ -36,7 +37,7 @@ export default function Home() {
             Browse Available Jobs
           </Link>
         </div>
-        <ConnectPetraWallet/>
+        
         <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl shadow-2xl p-6 border border-gray-800">
           <JobPostingForm />
         </div>
