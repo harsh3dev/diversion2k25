@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,7 +19,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Globe, Linkedin, MapPin, Briefcase } from "lucide-react";
 import ConnectPetraWallet from "@/components/tetra";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -45,9 +46,42 @@ export default function ClientProfile() {
   });
 
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const router = useRouter();
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  useEffect(() => {
+    const storedWalletAddress = localStorage.getItem("walletAddress");
+    if (storedWalletAddress) {
+      setIsWalletConnected(true);
+      setWalletAddress(storedWalletAddress);
+    }
+  }, []);
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!walletAddress) {
+      alert("Please connect your wallet first");
+      return;
+    }
+    const postData = { ...values, walletAddress };
+
+    try {
+      const response = await fetch("/api/user/client", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (response.ok) {
+        console.log("Client profile created successfully");
+        router.push("/client/dashboard");
+      } else {
+        console.error("Failed to create client profile");
+      }
+    } catch (error) {
+      console.error("An error occurred while creating client profile", error);
+    }
   }
 
   return (
@@ -58,8 +92,7 @@ export default function ClientProfile() {
             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
               Create Client Profile
             </CardTitle>
-            <ConnectPetraWallet isConnected={isWalletConnected} setIsConnected={setIsWalletConnected}  />
-
+            <ConnectPetraWallet isConnected={isWalletConnected} setIsConnected={setIsWalletConnected} />
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -71,9 +104,9 @@ export default function ClientProfile() {
                     <FormItem>
                       <FormLabel className="text-gray-200">Full Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="John Doe" 
-                          {...field} 
+                        <Input
+                          placeholder="John Doe"
+                          {...field}
                           className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100"
                         />
                       </FormControl>
@@ -91,9 +124,9 @@ export default function ClientProfile() {
                       <FormControl>
                         <div className="relative">
                           <Building2 className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                          <Input 
-                            placeholder="Acme Corporation" 
-                            {...field} 
+                          <Input
+                            placeholder="Acme Corporation"
+                            {...field}
                             className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
                           />
                         </div>
@@ -113,9 +146,9 @@ export default function ClientProfile() {
                         <FormControl>
                           <div className="relative">
                             <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                            <Input 
-                              placeholder="City, Country" 
-                              {...field} 
+                            <Input
+                              placeholder="City, Country"
+                              {...field}
                               className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
                             />
                           </div>
@@ -134,9 +167,9 @@ export default function ClientProfile() {
                         <FormControl>
                           <div className="relative">
                             <Briefcase className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                            <Input 
-                              placeholder="Technology" 
-                              {...field} 
+                            <Input
+                              placeholder="Technology"
+                              {...field}
                               className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
                             />
                           </div>
@@ -209,8 +242,8 @@ export default function ClientProfile() {
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={!isWalletConnected}
                   className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                 >

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useRouter } from "next/router";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,7 +34,16 @@ const formSchema = z.object({
 
 export default function Home() {
   const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const router = useRouter();
 
+  useEffect(() => {
+    const storedWalletAddress = localStorage.getItem("walletAddress");
+    if (storedWalletAddress) {
+      setIsWalletConnected(true);
+      setWalletAddress(storedWalletAddress);
+    }
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,8 +59,31 @@ export default function Home() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!walletAddress) {
+      alert("Please connect your wallet first");
+      return;
+    }
+    const postData = { ...values, walletAddress };
+
+    try {
+      const response = await fetch("/api/user/freelancer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (response.ok) {
+        console.log("Freelancer profile created successfully");
+        router.push("/jobs");
+      } else {
+        console.error("Failed to create freelancer profile");
+      }
+    } catch (error) {
+      console.error("An error occurred while creating freelancer profile", error);
+    }
   }
 
   return (
@@ -61,7 +94,7 @@ export default function Home() {
             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
               Create Freelancer Profile
             </CardTitle>
-            <ConnectPetraWallet isConnected={isWalletConnected} setIsConnected={setIsWalletConnected}  />
+            <ConnectPetraWallet isConnected={isWalletConnected} setIsConnected={setIsWalletConnected} />
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -73,9 +106,9 @@ export default function Home() {
                     <FormItem>
                       <FormLabel className="text-gray-200">Full Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="John Doe" 
-                          {...field} 
+                        <Input
+                          placeholder="John Doe"
+                          {...field}
                           className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100"
                         />
                       </FormControl>
@@ -91,9 +124,9 @@ export default function Home() {
                     <FormItem>
                       <FormLabel className="text-gray-200">Profile Image URL</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="https://example.com/image.jpg" 
-                          {...field} 
+                        <Input
+                          placeholder="https://example.com/image.jpg"
+                          {...field}
                           className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100"
                         />
                       </FormControl>
@@ -156,10 +189,10 @@ export default function Home() {
                       <FormControl>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                          <Input 
-                            className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10" 
-                            placeholder="City, Country" 
-                            {...field} 
+                          <Input
+                            className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
+                            placeholder="City, Country"
+                            {...field}
                           />
                         </div>
                       </FormControl>
@@ -233,10 +266,10 @@ export default function Home() {
                   />
                 </div>
 
-                <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
+                <Button
+                  type="submit"
                   disabled={!isWalletConnected}
+                  className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                 >
                   Create Profile
                 </Button>

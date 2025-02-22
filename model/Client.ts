@@ -35,7 +35,7 @@ const ClientSchema = new mongoose.Schema({
   linkedinUrl: {
     type: String,
   },
-  walletaddress: {
+  walletAddress: {
     type: String,
   },
 });
