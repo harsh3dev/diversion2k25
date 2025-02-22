@@ -17,7 +17,7 @@ const modal = createAppKit({
   })
 
 
-export default function useWallet () {
+export default function useEthWallet () {
     const state = useAppKitState();
     const { address, isConnected, embeddedWalletInfo } = useAppKitAccount();
 

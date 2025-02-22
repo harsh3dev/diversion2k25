@@ -1,23 +1,13 @@
 "use client"
-import { ActionButtonList } from '@/components/ActionButtonList';
-import { InfoList } from '@/components/InfoList';
 import JobPostingForm from '@/components/job-posting-form';
-import useWallet from '@/hooks/useWallet';
-import { USDTAbi, USDTAddress } from '@/lib/credentials';
+import useEthWallet from '@/hooks/useEthWallet';
 import ConnectButton from '@/lib/wallet-modal';
 import { FeatherIcon as EthereumIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useReadContract } from 'wagmi';
 
 
 export default function Home() {
-  // const result = useReadContract({
-  //   abi: USDTAbi,
-  //   address: USDTAddress,
-  //   functionName: 'totalSupply'
-  // })
-
-  const { loading, open, address, isConnected, user } = useWallet();
+  const { loading, open, address, isConnected, user } = useEthWallet();
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
