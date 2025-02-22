@@ -1,10 +1,21 @@
 import JobPostingForm from '@/components/job-posting-form';
+import { USDTAbi, USDTAddress } from '@/lib/credentials';
+import ConnectButton from '@/lib/wallet-modal';
 import { FeatherIcon as EthereumIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useReadContract } from 'wagmi';
+
 
 export default function Home() {
+  // const result = useReadContract({
+  //   abi: USDTAbi,
+  //   address: USDTAddress,
+  //   functionName: 'totalSupply'
+  // })
+
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <ConnectButton />
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-4">
