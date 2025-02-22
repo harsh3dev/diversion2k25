@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,6 +20,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Github, Linkedin, DollarSign, MapPin } from "lucide-react";
 import ConnectPetraWallet from "@/components/tetra";
+
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -67,7 +68,7 @@ export default function Home() {
     const postData = { ...values, walletAddress };
 
     try {
-      const response = await fetch("/api/user/freelancer", {
+      const response = await fetch("/api/user/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -271,7 +272,7 @@ export default function Home() {
                   disabled={!isWalletConnected}
                   className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                 >
-                  Create Profile
+                  {form.formState.isSubmitting ? "Creating Profile..." : "Create Profile"}
                 </Button>
               </form>
             </Form>

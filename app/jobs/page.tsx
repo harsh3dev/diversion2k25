@@ -53,12 +53,12 @@ export default function JobsPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Available Jobs</h1>
-          <Link 
+          {/* <Link 
             href="/" 
             className="text-blue-500 hover:text-blue-400 transition-colors"
           >
             Post a Job
-          </Link>
+          </Link> */}
         </div>
 
         <div className="space-y-6">
