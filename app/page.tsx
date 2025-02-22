@@ -1,5 +1,6 @@
 "use client"
 import JobPostingForm from '@/components/job-posting-form';
+import ConnectPetraWallet from '@/components/tetra';
 import useEthWallet from '@/hooks/useEthWallet';
 import ConnectButton from '@/lib/wallet-modal';
 import { FeatherIcon as EthereumIcon } from 'lucide-react';
@@ -35,7 +36,7 @@ export default function Home() {
             Browse Available Jobs
           </Link>
         </div>
-        
+        <ConnectPetraWallet/>
         <div className="bg-gray-900/50 backdrop-blur-xl rounded-xl shadow-2xl p-6 border border-gray-800">
           <JobPostingForm />
         </div>
