@@ -40,6 +40,9 @@ const FreelancerProfileSchema = new mongoose.Schema({
   linkedinUrl: {
     type: String,
   },
+  walletaddress: {
+    type: String,
+  },
 });
 
 export default mongoose.models.FreelancerProfile || mongoose.model('FreelancerProfile', FreelancerProfileSchema); 
