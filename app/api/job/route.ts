@@ -2,13 +2,13 @@ import Job from "@/model/Job";
 import connectDB from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest,{ params }: { params: { id: string } }) {
   await connectDB();
 
   if (params.id) {
     const job = await Job.findById(params.id);
     if (!job) {
-      return new Response('Job not found', { status: 404 });
+      return new Response('Job not found', { status: 400 });
     }
     return new Response(JSON.stringify(job), { status: 200 });
   } else {

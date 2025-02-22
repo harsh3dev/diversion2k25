@@ -39,6 +39,11 @@ const JobSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
+  status: {
+    type: String,
+    enum: ['Not Started', 'In Progress', 'Completed', 'Past Work', 'Disputed Work'],
+    default: 'Not Started',
+  },
 });
 
 export default mongoose.models.Job || mongoose.model('Job', JobSchema);
