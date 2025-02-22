@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -17,37 +16,35 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Github, Linkedin, DollarSign, MapPin } from "lucide-react";
+import { Building2, Globe, Linkedin, MapPin, Briefcase } from "lucide-react";
 import ConnectPetraWallet from "@/components/tetra";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  imageUrl: z.string().url("Please enter a valid URL").optional(),
-  about: z.string().min(50, "About section must be at least 50 characters"),
+  company: z.string().min(2, "Company name must be at least 2 characters"),
   location: z.string().min(2, "Location must be at least 2 characters"),
-  hourlyRate: z.number().min(1, "Hourly rate must be at least 1"),
-  languages: z.string().transform((str) => str.split(",").map((s) => s.trim())),
-  githubUrl: z.string().url("Please enter a valid GitHub URL").optional(),
+  industry: z.string().min(2, "Industry must be at least 2 characters"),
+  website: z.string().url("Please enter a valid URL").optional(),
+  about: z.string().min(50, "About section must be at least 50 characters"),
   linkedinUrl: z.string().url("Please enter a valid LinkedIn URL").optional(),
 });
 
-export default function Home() {
-  const [isWalletConnected, setIsWalletConnected] = useState(false);
-
-
+export default function ClientProfile() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      imageUrl: "",
-      about: "",
+      company: "",
       location: "",
-      hourlyRate: 0,
-      languages: [],
-      githubUrl: "",
+      industry: "",
+      website: "",
+      about: "",
       linkedinUrl: "",
     },
   });
+
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -59,9 +56,10 @@ export default function Home() {
         <Card className="border border-blue-500/20 glow-effect bg-[#121212]">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              Create Freelancer Profile
+              Create Client Profile
             </CardTitle>
             <ConnectPetraWallet isConnected={isWalletConnected} setIsConnected={setIsWalletConnected}  />
+
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -86,34 +84,78 @@ export default function Home() {
 
                 <FormField
                   control={form.control}
-                  name="imageUrl"
+                  name="company"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-200">Profile Image URL</FormLabel>
+                      <FormLabel className="text-gray-200">Company Name</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="https://example.com/image.jpg" 
-                          {...field} 
-                          className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100"
-                        />
+                        <div className="relative">
+                          <Building2 className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
+                          <Input 
+                            placeholder="Acme Corporation" 
+                            {...field} 
+                            className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
+                          />
+                        </div>
                       </FormControl>
-                      <FormDescription className="text-gray-400">
-                        Provide a URL to your professional photo
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-200">Location</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
+                            <Input 
+                              placeholder="City, Country" 
+                              {...field} 
+                              className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="industry"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-200">Industry</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Briefcase className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
+                            <Input 
+                              placeholder="Technology" 
+                              {...field} 
+                              className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
                   name="about"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-gray-200">About</FormLabel>
+                      <FormLabel className="text-gray-200">About Company</FormLabel>
                       <FormControl>
                         <Textarea
-                          placeholder="Tell us about yourself and your expertise..."
+                          placeholder="Tell us about your company and what you're looking for..."
                           className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 h-32"
                           {...field}
                         />
@@ -126,82 +168,16 @@ export default function Home() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <FormField
                     control={form.control}
-                    name="hourlyRate"
+                    name="website"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-gray-200">Hourly Rate ($)</FormLabel>
+                        <FormLabel className="text-gray-200">Website</FormLabel>
                         <FormControl>
                           <div className="relative">
-                            <DollarSign className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                            <Input
-                              type="number"
-                              className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
-                              {...field}
-                              onChange={(e) => field.onChange(Number(e.target.value))}
-                            />
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="location"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-200">Location</FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
-                          <Input 
-                            className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10" 
-                            placeholder="City, Country" 
-                            {...field} 
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="languages"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-gray-200">Languages</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="English, Spanish, French"
-                          {...field}
-                          className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-gray-400">
-                        Enter languages separated by commas
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="githubUrl"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-gray-200">GitHub Profile</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Github className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
+                            <Globe className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
                             <Input
                               className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
-                              placeholder="https://github.com/username"
+                              placeholder="https://example.com"
                               {...field}
                             />
                           </div>
@@ -222,7 +198,7 @@ export default function Home() {
                             <Linkedin className="absolute left-3 top-2.5 h-5 w-5 text-blue-500" />
                             <Input
                               className="input-glow bg-[#1a1a1a] border-blue-500/20 text-gray-100 pl-10"
-                              placeholder="https://linkedin.com/in/username"
+                              placeholder="https://linkedin.com/company/example"
                               {...field}
                             />
                           </div>
@@ -235,10 +211,10 @@ export default function Home() {
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                   disabled={!isWalletConnected}
+                  className="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-semibold glow-effect"
                 >
-                  Create Profile
+                  Create Client Profile
                 </Button>
               </form>
             </Form>

@@ -12,9 +12,13 @@ interface PetraWallet {
 
 const PETRA_WALLET_URL = "https://aptos.dev";
 
-const ConnectPetraWallet: React.FC = () => {
+interface ConnectPetraWalletProps {
+  isConnected: boolean;
+  setIsConnected: (isConnected: boolean) => void;
+}
+
+const ConnectPetraWallet: React.FC<ConnectPetraWalletProps> = ({ isConnected, setIsConnected }) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // AptosClient for blockchain interaction (optional, depends on your use case)

@@ -36,7 +36,11 @@ export default function AuthForm() {
       });
 
       if (res.ok) {
-        router.push("/onboarding");
+        if (isProgrammer) {
+          router.push("/onboarding");
+        } else {
+          router.push("/onboarding/client");
+        }
       } else {
         alert("Signup failed");
       }
