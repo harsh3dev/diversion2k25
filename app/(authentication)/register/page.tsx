@@ -23,7 +23,7 @@ export default function AuthForm() {
       if (res?.ok) {
         const session = await fetch("/api/auth/session").then((res) => res.json());
         localStorage.setItem("user", JSON.stringify(session.user));
-        router.push("/");
+        router.push("/jobs");
       } else {
         alert("Login failed");
       }
