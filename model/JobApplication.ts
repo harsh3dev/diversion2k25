@@ -10,18 +10,12 @@ const JobApplicationSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  coverLetter: {
-    type: String,
+  job: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Job',
     required: true,
   },
-  proposedAmount: {
-    type: Number,
-    required: true,
-  },
-  estimatedDuration: {
-    type: String,
-    required: true,
-  },
+  
 });
 
 export default mongoose.models.JobApplication || mongoose.model('JobApplication', JobApplicationSchema); 

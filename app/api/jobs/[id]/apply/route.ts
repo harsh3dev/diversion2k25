@@ -1,43 +1,55 @@
 import connectDB from '@/lib/mongodb';
 import Job from '@/model/Job';
 import JobApplication from '@/model/JobApplication';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 
-
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
   await connectDB();
 
-  const { id } = req.query;
+  try {
+    const { id, jobId } = await req.json();  
 
-  if (req.method === 'POST') {
-    const { coverLetter, userId } = req.body;
-
-    if (!coverLetter || !userId) {
-      return res.status(400).json({ message: 'Cover letter and user ID are required' });
+    if (!id) {
+      return NextResponse.json({ message: 'Invalid user ID' }, { status: 400 });
     }
 
-    try {
-      const job = await Job.findById(id);
-      if (!job) {
-        return res.status(404).json({ message: 'Job not found' });
-      }
-
-      const application = new JobApplication({
-        freelancer: userId,
-        appliedAt: new Date(),
-        coverLetter,
-        proposedAmount: 0, // Assuming proposedAmount is handled elsewhere
-        estimatedDuration: '', // Assuming estimatedDuration is handled elsewhere
-      });
-
-      await application.save();
-
-      res.status(201).json({ message: 'Application submitted successfully' });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error });
+    if (!jobId) {
+      return NextResponse.json({ message: 'Job ID is required' }, { status: 400 });
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return NextResponse.json({ message: 'Job not found' }, { status: 404 });
+    }
+
+    const application = new JobApplication({
+      job: jobId,
+      freelancer: id,
+      appliedAt: new Date(),
+    });
+
+    await application.save();
+
+    return NextResponse.json({ message: 'Application submitted successfully' }, { status: 201 });
+  } catch (error) {
+    console.error('Server error', error);
+    return NextResponse.json({ message: 'Server error', error }, { status: 500 });
   }
-} 
+}
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  await connectDB();
+  const { id } = params;
+
+  if (!id) {
+    return NextResponse.json({ message: 'Invalid job ID' }, { status: 400 });
+  }
+
+  try {
+    const applications = await JobApplication.find({ jobId: id }).populate('freelancer');
+    return NextResponse.json(applications, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: 'Server error', error }, { status: 500 });
+  }
+}
+

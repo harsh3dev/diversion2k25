@@ -9,9 +9,9 @@ import { formatAmount, formatDate } from "@/lib/utils/format";
 import Markdown from "react-markdown";
 import { ArrowLeft, FileText, Image, Code, File, AlertTriangle, CheckCircle, XCircle, DollarSign, Clock, Star, MapPin } from "lucide-react";
 import Link from "next/link";
-import { mockJobs } from "@/lib/mockData";
-import { formatDistanceToNow } from "date-fns";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDistanceToNow } from "date-fns";
 
 const statusColors = {
   not_started: "bg-slate-600",
@@ -20,16 +20,83 @@ const statusColors = {
   disputed: "bg-red-600",
 };
 
-const deliverableTypeIcons = {
+const deliverableTypeIcons: { [key: string]: any } = {
   document: FileText,
   image: Image,
   code: Code,
   other: File,
 };
 
+interface Milestone {
+  id: string;
+  description: string;
+  status: string;
+  amount: number;
+  deliverables: {
+    id: string;
+    name: string;
+    type: string;
+    url: string;
+    uploadedAt: string;
+  }[];
+}
+
+interface Job {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  status: string;
+  createdAt: string;
+  applicantsCount: number;
+  totalAmount: number;
+  milestones: Milestone[];
+}
+
+interface Application {
+  id: string;
+  freelancer: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    location: string;
+    trustTokens: number;
+  };
+  appliedAt: string;
+  coverLetter: string;
+  proposedAmount: number;
+  estimatedDuration: string;
+}
+
 export default function JobDetailsPage() {
   const { id } = useParams();
-  const job = mockJobs.find((j) => j._id === id);
+  const [job, setJob] = useState<Job | null>(null);
+  const [applications, setApplications] = useState<Application[]>([]);
+
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      const response = await fetch(`/api/jobs/${id}`);
+      if (!response.ok) {
+        console.log("Error occurred while fetching job details");
+        return;
+      }
+      const jobData: Job = await response.json();
+      setJob(jobData);
+    };
+
+    const fetchJobApplications = async () => {
+      const response = await fetch(`/api/jobs/${id}/apply`);
+      if (!response.ok) {
+        console.log("Error occurred while fetching job applications");
+        return;
+      }
+      const applicationsData: Application[] = await response.json();
+      setApplications(applicationsData);
+    };
+
+    fetchJobDetails();
+    fetchJobApplications();
+  }, [id]);
 
   if (!job) {
     return <div>Job not found</div>;
@@ -96,12 +163,12 @@ export default function JobDetailsPage() {
             <Markdown>{job.description}</Markdown>
           </div>
 
-          {/* Applicants Section for Not Started Jobs */}
-          {job.status === 'not_started' && job.applications && (
+          {/* Applicants Section */}
+          {applications.length > 0 && (
             <div className="space-y-4">
               <h2 className="text-xl font-semibold">Applicants</h2>
               <div className="grid gap-4">
-                {job.applications.map((application) => (
+                {applications.map((application) => (
                   <Link 
                     href={`/freelancers/${application.freelancer.id}`}
                     key={application.id}
