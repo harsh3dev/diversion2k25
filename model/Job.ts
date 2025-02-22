@@ -34,6 +34,11 @@ const JobSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 });
 
 export default mongoose.models.Job || mongoose.model('Job', JobSchema);

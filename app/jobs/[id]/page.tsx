@@ -1,3 +1,4 @@
+"use client";
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
@@ -7,9 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Briefcase, Clock, Coins, ArrowLeft } from 'lucide-react';
 import { mockJobs } from '@/lib/mockData';
 import JobDescription from './job-description';
+import { useEffect, useState } from 'react';
 
 
-export default async function JobPage({ params, }: { params: Promise<{ id: string }>}) {
+
+
   interface Milestone {
     description: string;
     amount: number;
@@ -24,13 +27,30 @@ export default async function JobPage({ params, }: { params: Promise<{ id: strin
     description: string;
     milestones: Milestone[];
   }
+export default function JobPage({ params }: { params: { id: string } }) {
 
-  const { id } = await params;
-  const job: Job | undefined = mockJobs.find((j: Job) => j._id === id);
-  
-  if (!job) notFound();
+  const [job, setJob] = useState<Job | null>(null);
+  const [totalAmount, setTotalAmount] = useState<number>(0);
 
-  const totalAmount = job.milestones.reduce((total, m) => total + m.amount, 0);
+  useEffect(() => {
+    const getData = async () => {
+      const { id } = params;
+      const response = await fetch(`/api/job/${id}`);
+      if (!response.ok) {
+        console.log("error occured")
+      }
+      const job: Job = await response.json();
+      setJob(job);
+      const totalAmount = job.milestones.reduce((total, m) => total + m.amount, 0);
+      setTotalAmount(totalAmount);
+    };
+
+    getData();
+  }, [params]);
+
+  if (!job) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">

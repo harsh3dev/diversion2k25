@@ -26,7 +26,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Loader2 } from "lucide-react";
-import { useRouter } from 'next/navigation';
 import { mockJobs } from '@/lib/mockData';
 
 const formSchema = z.object({
@@ -43,7 +42,7 @@ const formSchema = z.object({
 export default function JobPostingForm() {
   const [milestoneCount, setMilestoneCount] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
+ 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,21 +58,27 @@ export default function JobPostingForm() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setIsSubmitting(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Add the job to mock data with a new ID
-      const newJob = {
-        ...values,
-        _id: (mockJobs.length + 1).toString(),
-        createdAt: new Date().toISOString(),
-      };
-      mockJobs.unshift(newJob);
-
+      const user = JSON.parse(localStorage.getItem("user") || "{}"); // Parse the user object from localStorage
+      if (!user.id) {
+        throw new Error("User not found in localStorage");
+      }
+      const response = await fetch('/api/job', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...values, userId: user.id }), // Include userId in the request body
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to create job');
+      }
+  
+      const newJob = await response.json();
       form.reset();
       setMilestoneCount(1);
       console.log('Job posted:', newJob);
-      router.push('/jobs');
+      // router.push('/jobs');
     } catch (error: any) {
       console.error(error);
     } finally {
