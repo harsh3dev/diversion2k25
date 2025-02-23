@@ -11,6 +11,7 @@ const nextConfig = {
     experimental: {
       runtime: 'edge',
     },
+    output: 'standalone',
   };
   
   export default nextConfig;
