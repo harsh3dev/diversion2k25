@@ -10,6 +10,8 @@ import { Briefcase, Clock, Coins, ArrowLeft } from 'lucide-react';
 import { mockJobs } from '@/lib/mockData';
 import JobDescription from './job-description';
 import { useEffect, useState } from 'react';
+import { useParams } from "next/navigation";
+import { toast } from 'react-toastify';
 
 interface Milestone {
   description: string;
@@ -27,27 +29,32 @@ interface Job {
   status: string;
 }
 
-export default function JobPage({ params }: { params: { id: string } }) {
+export default function JobDetailsPage() {
+  const { id } = useParams();
   const [job, setJob] = useState<Job | null>(null);
   const [totalAmount, setTotalAmount] = useState<number>(0);
   const [userId, setUserId] = useState<string>(''); 
+  const [hasApplied, setHasApplied] = useState<boolean>(false);
+  const [applicant, setApplicant] = useState<string | null>(null);
 
   useEffect(() => {
-    const getData = async () => {
-      const { id } = params;
-      console.log("id ",id)
-      const response = await fetch(`/api/jobs/${id}`);
-      if (!response.ok) {
-        console.log("error occurred");
+    const fetchJob = async () => {
+      try {
+        const response = await fetch(`/api/jobs/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch job');
+        }
+        const data = await response.json();
+        setJob(data);
+        const totalAmount = data.milestones.reduce((total: number, m: Milestone) => total + m.amount, 0);
+        setTotalAmount(totalAmount);
+      } catch (error) {
+        console.error('Error fetching job:', error);
       }
-      const job: Job = await response.json();
-      setJob(job);
-      const totalAmount = job.milestones.reduce((total, m) => total + m.amount, 0);
-      setTotalAmount(totalAmount);
     };
 
-    getData();
-  }, [params]);
+    fetchJob();
+  }, [id]);
 
   const handleApply = async () => {
     const user = JSON.parse(localStorage.getItem('user') || ""); // Parse the user from localStorage
@@ -56,26 +63,28 @@ export default function JobPage({ params }: { params: { id: string } }) {
       return;
     }
     try {
-      const response = await fetch(`/api/jobs/${params.id}/apply`, {
+      const response = await fetch(`/api/jobs/${id}/apply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ // Ensure body is a JSON string
           id: user.id,
-          jobId: params.id
+          jobId: id
         }),
       });
   
       if (response.ok) {
-        alert('Application submitted successfully');
+        setHasApplied(true); // Update the state to reflect the application
+        setApplicant(user.id); // Set the current applicant
+        setJob((prevJob) => prevJob ? { ...prevJob, status: 'ongoing' } : null); // Update job status
       } else {
-        alert('Failed to submit application');
+        console.log("")
       }
     } catch (error) {
       console.error("Error submitting application", error);
-      alert('Error occurred while submitting the application');
     }
+    toast.success('Application submitted successfully');
   };
   
 
@@ -119,7 +128,7 @@ export default function JobPage({ params }: { params: { id: string } }) {
               </div>
               <div className="flex items-center gap-2">
                 <Coins className="w-4 h-4" />
-                <span>{totalAmount} ETH</span>
+                <span>{totalAmount} APT</span>
               </div>
             </div>
           </div>
@@ -148,13 +157,20 @@ export default function JobPage({ params }: { params: { id: string } }) {
                 </div>
               ))}
             </div>
+          
           </Card>
 
           <div className="flex justify-center">
-            <Button size="lg" className="glow-effect" onClick={handleApply}>
-              Apply for this Job
+            <Button size="lg" className="glow-effect" onClick={handleApply} disabled={hasApplied}>
+              {hasApplied ? 'Applied' : 'Apply for this Job'}
             </Button>
           </div>
+
+          {applicant && (
+            <div className="flex justify-center">
+              <p className="text-green-400">Current Applicant: {applicant}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

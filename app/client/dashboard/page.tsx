@@ -7,7 +7,7 @@ import { Briefcase, Users, Calendar, Target } from "lucide-react";
 import { formatDate, formatAmount } from "@/lib/utils/format";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
+import { mockJobs } from "@/lib/mockData";
 const statusColors = {
   not_started: "bg-slate-500",
   ongoing: "bg-blue-500",
@@ -29,16 +29,15 @@ interface Job {
 
 export default function DashboardPage() {
   const searchParams = useSearchParams();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState([]);
   const currentStatus = searchParams.get("status") || "ongoing";
 
   const fetchJobs = async () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const id = user.id;
     if (!id) return;
-    const res = await fetch(`/api/client/jobs/${id}`);
-    const data = await res.json();
-    setJobs(data);
+
+    setJobs(mockJobs);
   };
 
   useEffect(() => {
@@ -67,7 +66,7 @@ export default function DashboardPage() {
 
       {filteredJobs.length === 0 ? (
         <Card className="p-6 text-center text-muted-foreground">
-          No projects found in this category.
+         loading
         </Card>
       ) : (
         <div className="grid gap-6">

@@ -9,11 +9,11 @@ import { useEffect } from 'react';
 
 
 export default function Home() {
-  const { loading, open, address, isConnected, user } = useEthWallet();
+  // const { loading, open, address, isConnected, user } = useEthWallet();
 
-  useEffect(() => {
-    console.table({ loading, open, address, isConnected, user }, ['loading', 'open', 'address', 'isConnected', 'user']);
-  }, [loading, open, address, isConnected, user])
+  // useEffect(() => {
+  //   console.table({ loading, open, address, isConnected, user }, ['loading', 'open', 'address', 'isConnected', 'user']);
+  // }, [loading, open, address, isConnected, user])
 
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">

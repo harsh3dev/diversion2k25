@@ -13,6 +13,10 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { AcceptingorRejecting } from "@/components/accept";
+import { mockJobs } from "@/lib/mockData"
+import {toast } from "react-toastify"
+import {useRouter} from "next/navigation"
+import { useProject } from "@/app/hooks/useProject";
 
 const statusColors = {
   not_started: "bg-slate-600",
@@ -73,15 +77,13 @@ export default function JobDetailsPage() {
   const { id } = useParams();
   const [job, setJob] = useState<Job | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const router = useRouter();
+  const {createProject, loading, error} = useProject();
+
 
   useEffect(() => {
     const fetchJobDetails = async () => {
-      const response = await fetch(`/api/jobs/${id}`);
-      if (!response.ok) {
-        console.log("Error occurred while fetching job details");
-        return;
-      }
-      const jobData: Job = await response.json();
+      const jobData = mockJobs.find((j) => j._id === id);
       setJob(jobData);
     };
 
@@ -114,8 +116,10 @@ export default function JobDetailsPage() {
   }, [id]);
 
   if (!job) {
-    return <div>Job not found</div>;
+    return <div>Loading</div>;
   }
+
+
 
   const calculateMilestoneProgress = () => {
     const completed = job.milestones.filter(
@@ -134,9 +138,31 @@ export default function JobDetailsPage() {
     // Implement change request logic
   };
 
-  const handleRaiseDispute = (milestoneId: string) => {
+  const handleRaiseDispute = async (milestoneId: string) => {
     console.log('Raise dispute:', milestoneId);
     // Implement dispute logic
+    const user = JSON.parse(localStorage.getItem('user') || ""); // Parse the user from localStorage
+    if (!user) {
+      console.log("User not found");
+      return;
+    }
+
+    try{
+      await createProject({
+        clientAddress: walletAddress,
+        freelancerAddress,
+        milestoneDescriptions: milestones.map((m) => m.description),
+        milestoneAmounts: milestones.map((m) => m.amount),
+      });
+    } catch {
+      console.log("")
+    }
+    if(!loading){
+      toast.success("Dispute Raised")
+      router.push('/voting/2')
+    }
+
+   
   };
 
   return (
