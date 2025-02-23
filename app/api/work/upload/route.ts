@@ -2,7 +2,9 @@ import connectDB from '@/lib/mongodb';
 import Deliverable from '@/model/Deliverable';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { S3 } from 'aws-sdk';
+import { Readable } from 'stream';
 
+// Set up S3 instance for Cloudflare R2
 const s3 = new S3({
   endpoint: 'https://2de57c7224179b080809d4ee4c47f989.r2.cloudflarestorage.com',
   accessKeyId: '491885b2f5d4f7f933d823ade12a8cec',
@@ -11,11 +13,8 @@ const s3 = new S3({
   signatureVersion: 'v4',
 });
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// Use the Next.js route segment config for body parsing
+export const runtime = 'nodejs';  // Specify runtime for node environment
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await connectDB();
@@ -67,4 +66,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Allow', ['POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-} 
+}

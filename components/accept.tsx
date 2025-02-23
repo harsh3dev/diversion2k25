@@ -16,7 +16,7 @@ export function AcceptingorRejecting({ job, userId }: any) {
   const { createProject, loading, error } = useProject();
   const [freelancerAddress, setFreelancerAddress] = useState('0xb038adc01c39a521654c3898757803295400deb3bd31d3a39f6e75f916f75016');
   const [walletAddress, setWalletAddress] = useState('0xaf7d83cc10e7a57548b44e8295a38ef3564b1f82723c35acaee2a21c21b5d7be');
-  const [milestones, setMilestones] = useState([{ description: '', amount: 0 }]);
+  const [milestones, setMilestones] = useState(job.milestones);
 
   // useEffect(() => {
   //   async function fetchWalletAddress() {
@@ -42,7 +42,7 @@ export function AcceptingorRejecting({ job, userId }: any) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const totalAmount = calculateTotalAmount(milestones.map((m) => m.amount));
-
+     console.log("milestones ",milestones)
     try {
       await createProject({
         clientAddress: walletAddress,

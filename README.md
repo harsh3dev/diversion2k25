@@ -23,5 +23,7 @@ AptoChain is an **Aptos-powered freelancing marketplace** that ensures propoer t
 
 ### **Backend:**
 - **MongoDB**:- A NoSQL database for storing Metadata
-- **CloudFlare AI**:-  
+- **CloudFlare**:- Deployment
+- **CloudFlare AI**:- [Future Additions]
+
 
