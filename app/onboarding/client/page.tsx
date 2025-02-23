@@ -75,6 +75,8 @@ export default function ClientProfile() {
         body: JSON.stringify(postData),
       });
 
+      localStorage.setItem("user",JSON.stringify(postData))
+
       if (response.ok) {
         console.log("Client profile created successfully");
         router.push("/client/dashboard");

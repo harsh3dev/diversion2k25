@@ -61,10 +61,7 @@ export default function Home() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!walletAddress) {
-      alert("Please connect your wallet first");
-      return;
-    }
+    const walletAddress = localStorage.getItem("walletAddress");
     const postData = { ...values, walletAddress };
 
     try {

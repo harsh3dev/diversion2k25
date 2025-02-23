@@ -10,7 +10,8 @@ interface PetraWallet {
   disconnect: () => Promise<void>;
 }
 
-const PETRA_WALLET_URL = "https://aptos.dev";
+const PETRA_WALLET_URL = "https://fullnode.devnet.aptoslabs.com"; // Use the correct network URL
+
 
 interface ConnectPetraWalletProps {
   isConnected: boolean;

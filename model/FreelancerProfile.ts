@@ -42,6 +42,15 @@ const FreelancerProfileSchema = new mongoose.Schema({
   walletaddress: {
     type: String,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
 });
 
-export default mongoose.models.FreelancerProfile || mongoose.model('FreelancerProfile', FreelancerProfileSchema); 
+export default mongoose.models.FreelancerProfile || mongoose.model('FreelancerProfile', FreelancerProfileSchema);
