@@ -30,7 +30,7 @@ interface Job {
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const [jobs, setJobs] = useState<Job[]>([]);
-  const currentStatus = searchParams.get("status") || "ongoing";
+  const currentStatus = searchParams.get("status") || "applied";
 
   const fetchJobs = async () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -46,28 +46,19 @@ export default function DashboardPage() {
   }, []);
 
   // Filter jobs based on status
-  const filteredJobs = jobs.filter((job) => {
-    if (currentStatus === "past") {
-      return job.status === "completed" && new Date(job.createdAt) < new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    }
-    return job.status === currentStatus;
-  });
+  const filteredJobs = jobs.filter((job) => job.status === currentStatus);
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-          {currentStatus === "past"
-            ? "Past Work"
-            : currentStatus === "disputed"
-            ? "Disputed Work"
-            : `${currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1)} Projects`}
+          Applied Jobs
         </h1>
       </div>
 
       {filteredJobs.length === 0 ? (
         <Card className="p-6 text-center text-muted-foreground">
-          No projects found in this category.
+          No jobs found in this category.
         </Card>
       ) : (
         <div className="grid gap-6">

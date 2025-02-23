@@ -5,71 +5,31 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  MenuIcon,
-  XIcon,
-  CircleEllipsis,
-  CheckCircle2,
-  Clock,
-  History,
-  AlertCircle,
-  PlusCircle,
-} from "lucide-react";
+import { MenuIcon, XIcon, Briefcase } from "lucide-react";
 import { signOut } from "next-auth/react";
-import ConnectPetraWallet from "@/components/tetra";
+
+
 const navigationItems = [
   {
-    label: "In Progress",
-    icon: CircleEllipsis,
-    count: 3,
-    status: "ongoing",
-  },
-  {
-    label: "Completed",
-    icon: CheckCircle2,
-    count: 8,
-    status: "completed",
-  },
-  {
-    label: "Not Started",
-    icon: Clock,
-    count: 4,
-    status: "not_started",
-  },
-  {
-    label: "Past Work",
-    icon: History,
-    count: 12,
-    status: "past",
-  },
-  {
-    label: "Disputed Work",
-    icon: AlertCircle,
-    count: 1,
-    status: "disputed",
+    label: "Applied Jobs",
+    icon: Briefcase,
+    status: "applied",
   },
 ];
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function FreelancerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const currentStatus = searchParams.get("status") || "ongoing";
+  const currentStatus = searchParams.get("status") || "applied";
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const handleTabChange = (status: string) => {
-    router.push(`/client/dashboard?status=${status}`);
+    router.push(`/freelancer/dashboard?status=${status}`);
   };
 
   const handleLogout = () => {
-    // signOut();
-    router.push('/');
+    signOut();
   };
-
-  const [isConnected, setIsConnected] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
@@ -104,33 +64,38 @@ export default function DashboardLayout({
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">NewClient</p>
-              <p className="text-sm text-muted-foreground">NewClient@newclient.com</p>
+              <p className="font-medium">Freelancer Name</p>
+              <p className="text-sm text-muted-foreground">freelancer@example.com</p>
             </div>
           </div>
         </div>
 
         {/* Navigation */}
         <nav className="p-4 space-y-2">
-          <Button
-            variant="default"
-            className="w-full justify-start gap-3 mt-4"
-            onClick={() => router.push("/client/job/create")}
-          >
-            <PlusCircle className="h-4 w-4" />
-            <span className="flex-1 text-left">Create Job</span>
-          </Button>
-        <ConnectPetraWallet isConnected={isConnected} setIsConnected={setIsConnected} />
+          {navigationItems.map((item) => (
+            <Button
+              key={item.label}
+              variant={currentStatus === item.status ? "secondary" : "ghost"}
+              className={cn(
+                "w-full justify-start gap-3 transition-colors",
+                currentStatus === item.status &&
+                  "bg-primary/10 text-primary hover:bg-primary/20"
+              )}
+              onClick={() => handleTabChange(item.status)}
+            >
+              <item.icon className="h-4 w-4" />
+              <span className="flex-1 text-left">{item.label}</span>
+            </Button>
+          ))}
         </nav>
+        <Button size="lg" className="glow-effect ml-4" onClick={handleLogout}>Logout</Button>
       </aside>
-
-      
 
       {/* Main Content */}
       <main
         className={cn(
           "min-h-screen transition-all duration-200 ease-in-out",
-          isSidebarOpen ? "lg:pl-0" : "lg:pl-0"
+          isSidebarOpen ? "lg:pl-64" : "lg:pl-0"
         )}
       >
         {children}

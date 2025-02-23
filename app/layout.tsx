@@ -4,6 +4,8 @@ import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import WagmiProviderComp from "@/lib/wagmi/wagmi-provider";
 import { headers } from "next/headers";
+import {ToastContainer, Bounce} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,6 +34,20 @@ export default function RootLayout({
         >
           <WagmiProviderComp cookies={cookies}>
             {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={false}
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              transition={Bounce}
+              />
+
           </WagmiProviderComp>
         </ThemeProvider>
       </body>

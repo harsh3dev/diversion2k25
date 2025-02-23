@@ -5,57 +5,33 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  MenuIcon,
-  XIcon,
-  CircleEllipsis,
-  CheckCircle2,
-  Clock,
-  History,
-  AlertCircle,
-} from "lucide-react";
+import { MenuIcon, XIcon, Briefcase, PlusCircle } from "lucide-react";
 
 const navigationItems = [
   {
-    label: "In Progress",
-    icon: CircleEllipsis,
-    count: 3,
+    label: "Ongoing Projects",
+    icon: Briefcase,
     status: "ongoing",
   },
   {
-    label: "Completed",
-    icon: CheckCircle2,
-    count: 8,
-    status: "completed",
-  },
-  {
-    label: "Not Started",
-    icon: Clock,
-    count: 4,
-    status: "not_started",
-  },
-  {
-    label: "Past Work",
-    icon: History,
-    count: 12,
-    status: "past",
-  },
-  {
-    label: "Disputed Work",
-    icon: AlertCircle,
-    count: 1,
-    status: "disputed",
+    label: "Create Job",
+    icon: PlusCircle,
+    status: "create",
   },
 ];
 
-export default function FreelancerLayout({ children }: { children: React.ReactNode }) {
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentStatus = searchParams.get("status") || "ongoing";
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const handleTabChange = (status: string) => {
-    router.push(`/freelancer/dashboard?status=${status}`);
+    if (status === "create") {
+      router.push("/client/job/create");
+    } else {
+      router.push(`/client/dashboard?status=${status}`);
+    }
   };
 
   return (
@@ -91,8 +67,8 @@ export default function FreelancerLayout({ children }: { children: React.ReactNo
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium">Freelancer Name</p>
-              <p className="text-sm text-muted-foreground">freelancer@example.com</p>
+              <p className="font-medium">NewClient</p>
+              <p className="text-sm text-muted-foreground">newclient@newclient.com</p>
             </div>
           </div>
         </div>
@@ -112,16 +88,6 @@ export default function FreelancerLayout({ children }: { children: React.ReactNo
             >
               <item.icon className="h-4 w-4" />
               <span className="flex-1 text-left">{item.label}</span>
-              <span
-                className={cn(
-                  "px-2 py-0.5 text-xs rounded-full",
-                  currentStatus === item.status
-                    ? "bg-primary/20 text-primary"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {item.count}
-              </span>
             </Button>
           ))}
         </nav>
