@@ -14,10 +14,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { AcceptingorRejecting } from "@/components/accept";
 import { mockJobs } from "@/lib/mockData"
-import {toast } from "react-toastify"
 import {useRouter} from "next/navigation"
 import { useProject } from "@/app/hooks/useProject";
-
+import {toast } from "react-toastify"
 const statusColors = {
   not_started: "bg-slate-600",
   ongoing: "bg-blue-600",
@@ -75,7 +74,7 @@ interface Application {
 
 export default function JobDetailsPage() {
   const { id } = useParams();
-  const [job, setJob] = useState<Job | null>(null);
+  const [job, setJob] = useState<Job | null | undefined>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const router = useRouter();
   const {createProject, loading, error} = useProject();
@@ -84,6 +83,7 @@ export default function JobDetailsPage() {
   useEffect(() => {
     const fetchJobDetails = async () => {
       const jobData = mockJobs.find((j) => j._id === id);
+      if(!jobData) return;
       setJob(jobData);
     };
 

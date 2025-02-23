@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import { Upload, Paperclip, Send, Clock, Image as ImageIcon, File } from 'lucide-react';
+import Image from 'next/image';
 
 interface FileItem {
   name: string;
@@ -102,7 +103,7 @@ function App() {
     if (file.type.startsWith('image/') && file.preview) {
       return (
         <div className="relative group">
-          <img
+          <Image
             src={file.preview}
             alt={file.name}
             className="h-20 w-20 object-cover rounded-lg"

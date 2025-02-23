@@ -1,17 +1,12 @@
-import connectDB from "@/lib/mongodb";
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import connectDB from "@/lib/mongodb";
 import User from "@/model/user";
 import bcrypt from "bcryptjs";
 
-// Define a type for your user
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-export const authOptions: NextAuthOptions = {
+// Define the auth options in a separate file
+const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -19,30 +14,26 @@ export const authOptions: NextAuthOptions = {
         username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: Record<string, string> | undefined, req) {
+      async authorize(credentials) {
         await connectDB();
 
         const username = credentials?.username;
         const password = credentials?.password;
 
-        // Ensure username and password are defined
         if (!username || !password) {
           return null;
         }
 
-        // Find the user in the database
         const user = await User.findOne({ username });
         if (!user) {
           return null;
         }
 
-        // Check if the password is correct
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
           return null;
         }
 
-        // Return the user object
         return {
           id: user._id.toString(),
           name: user.username,
@@ -51,7 +42,6 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-
   session: {
     strategy: "jwt",
   },
@@ -68,9 +58,9 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = token.id;
         session.user.name = token.name;
         session.user.email = token.email;
       }
@@ -79,6 +69,8 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
-const handler = NextAuth(authOptions);
+// Create the auth handler
+const handler = NextAuth(options);
 
+// Export the handler as GET and POST
 export { handler as GET, handler as POST };
