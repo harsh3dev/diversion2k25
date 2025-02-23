@@ -1,4 +1,4 @@
-# AptoChain
+# AptoLancer
 A decentralized marketplace for freelancers
 
 ## Problem Statement
