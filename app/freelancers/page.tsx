@@ -8,6 +8,7 @@ import { formatDate, formatAmount } from "@/lib/utils/format";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+
 const statusColors = {
   not_started: "bg-slate-500",
   ongoing: "bg-blue-500",
@@ -26,27 +27,70 @@ interface Job {
   milestones: { length: number }[];
   totalAmount: number;
 }
-
+export const mockJobs = [
+  {
+    _id: '1',
+    title: 'Web Developer',
+    category: 'Development',
+    status: 'applied',
+    createdAt: '2023-01-01T00:00:00Z',
+    applicantsCount: 5,
+    milestones: [{ length: 3 }],
+    totalAmount: 5000,
+  },
+  {
+    _id: '2',
+    title: 'Graphic Designer',
+    category: 'Design',
+    status: 'applied',
+    createdAt: '2023-02-01T00:00:00Z',
+    applicantsCount: 3,
+    milestones: [{ length: 2 }],
+    totalAmount: 3000,
+  },
+  {
+    _id: '3',
+    title: 'Content Writer',
+    category: 'Writing',
+    status: 'applied',
+    createdAt: '2023-03-01T00:00:00Z',
+    applicantsCount: 7,
+    milestones: [{ length: 4 }],
+    totalAmount: 2000,
+  },
+  {
+    _id: '4',
+    title: 'SEO Specialist',
+    category: 'Marketing',
+    status: 'applied',
+    createdAt: '2023-04-01T00:00:00Z',
+    applicantsCount: 2,
+    milestones: [{ length: 1 }],
+    totalAmount: 1500,
+  },
+];
 export default function DashboardPage() {
   const searchParams = useSearchParams();
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobs, setJobs] = useState<Job[]>(mockJobs);
   const currentStatus = searchParams.get("status") || "applied";
 
-  const fetchJobs = async () => {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const id = user.id;
-    if (!id) return;
-    const res = await fetch(`/api/freelancers/${id}/alljob`);
-    const data = await res.json();
-    setJobs(data);
-  };
+  // const fetchJobs = async () => {
+  //   const user = JSON.parse(localStorage.getItem('user') || '{}');
+  //   const id = user.id;
+  //   if (!id) return;
+  //   const res = await fetch(`/api/freelancers/${id}/alljob`);
+  //   const data = await res.json();
+  //   setJobs(data);
+  // };
 
-  useEffect(() => {
-    fetchJobs();
-  }, []);
+  // useEffect(() => {
+  //   fetchJobs();
+  // }, []);
 
   // Filter jobs based on status
-  const filteredJobs = jobs.filter((job) => job.status === currentStatus);
+
+
+  const filteredJobs = jobs?.filter((job) => job.status === currentStatus);
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -74,7 +118,7 @@ export default function DashboardPage() {
                       <Badge
                         className={`${
                           statusColors[job.status as keyof typeof statusColors || "not_started"]
-                        } text-white capitalize`}
+                        } text-blue-500 capitalize bg-slate-500`}
                       >
                         {(job.status || "not_started").replace("_", " ")}
                       </Badge>
