@@ -26,4 +26,17 @@ AptoChain is an **Aptos-powered freelancing marketplace** that ensures propoer t
 - **CloudFlare**:- Deployment
 - **CloudFlare AI**:- [Future Additions]
 
+## Reasons for Choosing Tech Stack
+- **Aptos Blockchain**
+  - High transaction speed about 100000+ transactions per second
+  - Uses MOVE as smart contract language which allows parallel execution
+  - Has a low and predictable gas fee
+
+- **MongoDB**
+  - Flexible, uses JSON-like documents.
+  - Can be self-hosted and has cloud functionalities(MongoDB Atlas).
+
+- **CloudFlare**
+  - Built-in DDoS protection and encryption.
+  - No additional cloud-based AI services required. 
 
