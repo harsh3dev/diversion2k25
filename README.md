@@ -1,4 +1,7 @@
-# AptoChain:- A decentralized marketplace for freelancers
+# AptoChain
+A decentralized marketplace for freelancers
+
+## Problem Statement
 
 AptoChain is an **Aptos- powered freelancing marketplace** that ensures propoer transparency on behalf of the freelenacers as well the clients by ensuring
 - **Financial Security**:-  Utilizes a **Move Smart Contract** to divide tasks into milestones. Upon completing a milestone and receiving client approval, the corresponding payment is securely transferred.
