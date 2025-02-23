@@ -1,7 +1,7 @@
 # AptoLancer
 A decentralized marketplace for freelancers
 
-## Problem Statement
+## ⚖️ Problem Statement
 
 AptoChain is an **Aptos-powered freelancing marketplace** that ensures propoer transparency on behalf of the freelenacers as well the clients by ensuring
 - **Financial Security**:-  Utilizes a **Move Smart Contract** to divide tasks into milestones. Upon completing a milestone and receiving client approval, the corresponding payment is securely transferred.
@@ -11,32 +11,32 @@ AptoChain is an **Aptos-powered freelancing marketplace** that ensures propoer t
 
 ## 🛠 Tech Stack
 
-### **BlockChain and Smart Contracts:**
+### ⛓️**BlockChain and Smart Contracts:**
 - **Aptos Move Language**:- provides Security and Efficiency to smart contracts
 - **Escrow Smart Contract**:- Automates the payment procedure
 
-### **Frontend:**
+### 🎨**Frontend:**
 - **NextJS 14**:- Fast response time of the web-app
 - **Tailwind-CSS**:- Adds a modern look to the UI
 - **Web3JS**:- Adds connectivity between frontend and the Smart Contract
 - **AptosSDK**:- Easy usage of the smart contracts
 
-### **Backend:**
+### 💾**Backend:**
 - **MongoDB**:- A NoSQL database for storing Metadata
 - **CloudFlare**:- Deployment
 - **CloudFlare AI**:- [Future Additions]
 
 ## Reasons for Choosing Tech Stack
-- **Aptos Blockchain**
+- ⚡**Aptos Blockchain**
   - High transaction speed about 100000+ transactions per second
   - Uses MOVE as smart contract language which allows parallel execution
   - Has a low and predictable gas fee
 
-- **MongoDB**
+- 🍃**MongoDB**
   - Flexible, uses JSON-like documents.
   - Can be self-hosted and has cloud functionalities(MongoDB Atlas).
 
-- **CloudFlare**
+- ☁️**CloudFlare**
   - Built-in DDoS protection and encryption.
   - No additional cloud-based AI services required. 
 
