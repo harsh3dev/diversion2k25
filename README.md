@@ -12,14 +12,16 @@ AptoChain is an **Aptos-powered freelancing marketplace** that ensures propoer t
 ## 🛠 Tech Stack
 
 ### **BlockChain and Smart Contracts:**
-- **Aptos Move Language**:- provides Security and Efficiency to 
-- **Escrow Smart Contract**:-
+- **Aptos Move Language**:- provides Security and Efficiency to smart contracts
+- **Escrow Smart Contract**:- Automates the payment procedure
 
 ### **Frontend:**
-- **NextJS 14**:-
-- **Tailwind & CSS**:-
-- **Web3JS**:-
+- **NextJS 14**:- Fast response time of the web-app
+- **Tailwind-CSS**:- Adds a modern look to the UI
+- **Web3JS**:- Adds connectivity between frontend and the Smart Contract
+- **AptosSDK**:- Easy usage of the smart contracts
 
 ### **Backend:**
-- **MongoDB**:-
+- **MongoDB**:- A NoSQL database for storing Metadata
+- **CloudFlare AI**:-  
 
