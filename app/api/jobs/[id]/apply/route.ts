@@ -29,6 +29,9 @@ export async function POST(req: NextRequest) {
       appliedAt: new Date(),
     });
 
+    const jobs = await Job.findById(jobId);
+    jobs.freelancerJobId = jobId;
+
     await application.save();
     
     return NextResponse.json({ message: 'Application submitted successfully' }, { status: 201 });

@@ -52,6 +52,7 @@ export function AcceptingorRejecting({ job, userId }: any) {
       });
 
       // Reset form
+      //toast.success("Payment sent Successfully")
       setFreelancerAddress('');
       setMilestones([{ description: '', amount: 0 }]);
     } catch (error) {

@@ -36,7 +36,7 @@ export default function DashboardPage() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const id = user.id;
     if (!id) return;
-    const res = await fetch(`/api/freelancer/jobs/${id}`);
+    const res = await fetch(`/api/freelancers/${id}/alljob`);
     const data = await res.json();
     setJobs(data);
   };
