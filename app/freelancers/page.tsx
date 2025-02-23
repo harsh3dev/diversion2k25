@@ -107,7 +107,7 @@ export default function DashboardPage() {
       ) : (
         <div className="grid gap-6">
           {filteredJobs.map((job) => (
-            <Link href={`/freelancer/dashboard/jobs/${job._id}`} key={job._id}>
+            <Link href={`/freelancers/dashboard/${job._id}`} key={job._id}>
               <Card className="p-6 hover:shadow-lg transition-shadow duration-200 bg-card/50 backdrop-blur-sm border-slate-800/50 hover:border-slate-700">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div className="space-y-2">

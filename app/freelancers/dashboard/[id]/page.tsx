@@ -52,7 +52,7 @@ export default function FreelancerProfilePage() {
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <Avatar className="w-24 h-24">
               <AvatarImage src={freelancer.imageUrl} />
-              <AvatarFallback>{freelancer.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+              <AvatarFallback>{mp}</AvatarFallback>
             </Avatar>
             
             <div className="flex-1 space-y-4">
