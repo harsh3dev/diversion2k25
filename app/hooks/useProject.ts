@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-
 interface CreateProjectParams {
   clientAddress: string;
   freelancerAddress: string;

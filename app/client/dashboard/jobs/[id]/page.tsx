@@ -16,6 +16,7 @@ import { AcceptingorRejecting } from "@/components/accept";
 import { mockJobs } from "@/lib/mockData"
 import {toast } from "react-toastify"
 import {useRouter} from "next/navigation"
+import { useProject } from "@/app/hooks/useProject";
 
 const statusColors = {
   not_started: "bg-slate-600",
@@ -77,6 +78,8 @@ export default function JobDetailsPage() {
   const [job, setJob] = useState<Job | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const router = useRouter();
+  const {createProject, loading, error} = useProject();
+
 
   useEffect(() => {
     const fetchJobDetails = async () => {
@@ -116,6 +119,8 @@ export default function JobDetailsPage() {
     return <div>Loading</div>;
   }
 
+
+
   const calculateMilestoneProgress = () => {
     const completed = job.milestones.filter(
       (m) => m.status === "completed"
@@ -141,10 +146,21 @@ export default function JobDetailsPage() {
       console.log("User not found");
       return;
     }
-    
-      toast.success("Dispute Raised")
 
+    try{
+      await createProject({
+        clientAddress: walletAddress,
+        freelancerAddress,
+        milestoneDescriptions: milestones.map((m) => m.description),
+        milestoneAmounts: milestones.map((m) => m.amount),
+      });
+    } catch {
+      console.log("")
+    }
+    if(!loading){
+      toast.success("Dispute Raised")
       router.push('/voting/2')
+    }
 
    
   };
