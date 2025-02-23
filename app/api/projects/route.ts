@@ -52,10 +52,10 @@ export async function POST(request: NextRequest) {
     
     // Ensure all milestone amounts are valid u64 values
     const amounts = body.milestoneAmounts;
-    
+    console.log("amounts ",amounts)
     // Calculate total
     const totalAmount = amounts.reduce((sum, amount) => sum + amount, 0);
-
+    console.log("payload ",body)
     const payload: Types.TransactionPayload = {
       type: "entry_function_payload",
       function: `0xa8b9f1264df1dfebc48397cf1f57cd405b4c2080b9d3ca16a70f20124998f28f::FreelanceEscrow::create_project`,
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         totalAmount
       ]
     };
-
+    
     return NextResponse.json({ 
       success: true,
       payload,
